@@ -1,16 +1,21 @@
+import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  ...authTables,
+
+  // Розширюємо стандартну таблицю users з authTables нашими додатковими полями
   users: defineTable({
-    username: v.string(),
-    fullname: v.string(),
-    email: v.string(),
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    username: v.optional(v.string()),
+    fullname: v.optional(v.string()),
     bio: v.optional(v.string()),
-    image: v.string(),
-    followers: v.number(),
-    following: v.number(),
-    posts: v.number(),
+    followers: v.optional(v.number()),
+    following: v.optional(v.number()),
+    posts: v.optional(v.number()),
   }).index("by_email", ["email"]),
 
   posts: defineTable({
