@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export default function ScreenHome() {
+export default function ScreenCreate() {
   return (
     <View style={styles.container}>
-      <Text style={{ color: "#fff" }}>Home Title</Text>
+      <Text style={{ color: "#fff" }}>Create Title</Text>
     </View>
   );
 }

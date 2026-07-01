@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export default function ScreenHome() {
+export default function ScreenProfile() {
   return (
     <View style={styles.container}>
-      <Text style={{ color: "#fff" }}>Home Title</Text>
+      <Text style={{ color: "#fff" }}>Profile Title</Text>
     </View>
   );
 }
