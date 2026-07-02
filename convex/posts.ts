@@ -217,18 +217,98 @@ export const deletePost = mutation({
       await ctx.db.delete(bookmark._id);
     }
 
-    // 4. Видаляємо зображення зі Storage
+    // 4. Видаляємо всі пов'язані сповіщення
+    const notifications = await ctx.db
+      .query("notifications")
+      .withIndex("by_post", (q) => q.eq("postId", args.postId))
+      .collect();
+    for (const notification of notifications) {
+      await ctx.db.delete(notification._id);
+    }
+
+    // 5. Видаляємо зображення зі Storage
     await ctx.storage.delete(post.storageId);
 
-    // 5. Видаляємо сам документ посту
+    // 6. Видаляємо сам документ посту
     await ctx.db.delete(args.postId);
 
-    // 6. Зменшуємо кількість постів користувача
+    // 7. Зменшуємо кількість постів користувача
     const currentUser = await ctx.db.get(userId);
     if (currentUser) {
       await ctx.db.patch(userId, {
         posts: Math.max(0, (currentUser.posts ?? 1) - 1),
       });
     }
+  },
+});
+
+/**
+ * Отримує один пост за його ID з інформацією про автора, лайк та закладку
+ */
+export const getPostById = query({
+  args: {
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, args) => {
+    const post = await ctx.db.get(args.postId);
+    if (!post) return null;
+
+    const author = await ctx.db.get(post.userId);
+    const userId = await getAuthUserId(ctx);
+
+    let isLiked = false;
+    let isBookmarked = false;
+
+    if (userId) {
+      const like = await ctx.db
+        .query("likes")
+        .withIndex("by_user_and_post", (q) =>
+          q.eq("userId", userId).eq("postId", post._id),
+        )
+        .first();
+      isLiked = !!like;
+
+      const bookmark = await ctx.db
+        .query("bookmarks")
+        .withIndex("by_both", (q) =>
+          q.eq("userId", userId).eq("postId", post._id),
+        )
+        .first();
+      isBookmarked = !!bookmark;
+    }
+
+    return {
+      ...post,
+      author: {
+        _id: author?._id,
+        username: author?.username ?? author?.name ?? "user",
+        image:
+          author?.image ??
+          "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde",
+      },
+      isLiked,
+      isBookmarked,
+    };
+  },
+});
+
+/**
+ * Отримує всі пости конкретного користувача
+ */
+export const getPostsByUser = query({
+  args: {
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const userId = args.userId ?? (await getAuthUserId(ctx));
+    if (!userId) return [];
+
+    const posts = await ctx.db
+      .query("posts")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
+      .collect();
+
+    return posts;
   },
 });
