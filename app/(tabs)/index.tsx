@@ -5,6 +5,7 @@ import { styles } from "@/styles/feed.styles";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
+import { StoriesSection } from "@/components/StoriesSection";
 import {
   ActivityIndicator,
   FlatList,
@@ -42,6 +43,7 @@ export default function FeedScreen() {
         keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 60 }}
+        ListHeaderComponent={<StoriesSection />}
         ListEmptyComponent={
           <View style={[styles.centered, { marginTop: 40 }]}>
             <Text style={{ color: COLORS.grey, fontSize: 16 }}>
