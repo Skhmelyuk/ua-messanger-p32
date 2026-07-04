@@ -6,6 +6,7 @@ import { styles } from "@/styles/feed.styles";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
+import { StoriesSection } from "@/components/StoriesSection";
 import {
   ActivityIndicator,
   FlatList,

@@ -1,5 +1,4 @@
-// components/Loader.tsx
-import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { COLORS } from "@/constants/theme";
 
 export function Loader() {

@@ -1,4 +1,3 @@
-// styles/notifications.styles.ts
 import { StyleSheet } from "react-native";
 import { COLORS } from "@/constants/theme";
 

@@ -1,4 +1,3 @@
-// convex/stories.ts
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -65,7 +64,7 @@ export const incrementViews = mutation({
   handler: async (ctx, args) => {
     const story = await ctx.db.get(args.storyId);
     if (!story) throw new Error("Історію не знайдено");
-    
+
     await ctx.db.patch(args.storyId, {
       views: story.views + 1,
     });

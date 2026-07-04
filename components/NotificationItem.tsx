@@ -1,4 +1,3 @@
-// components/NotificationItem.tsx
 import { View, Text, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
@@ -29,7 +28,9 @@ export interface NotificationProps {
 export function NotificationItem({ notification }: NotificationProps) {
   return (
     <View style={styles.notificationItem}>
+      {/* CONTENT */}
       <View style={styles.notificationContent}>
+        {/* Avatar with Icon Badge */}
         <Link href={`/user/${notification.sender._id}` as any} asChild>
           <TouchableOpacity style={styles.avatarContainer}>
             <Image
@@ -50,6 +51,7 @@ export function NotificationItem({ notification }: NotificationProps) {
           </TouchableOpacity>
         </Link>
 
+        {/* Notification Info */}
         <View style={styles.notificationInfo}>
           <Link href={`/user/${notification.sender._id}` as any} asChild>
             <TouchableOpacity>
@@ -75,6 +77,7 @@ export function NotificationItem({ notification }: NotificationProps) {
         </View>
       </View>
 
+      {/* Post Image (if exists) */}
       {notification.post && (
         <Link href={`/post/${notification.post._id}` as any} asChild>
           <TouchableOpacity>

@@ -67,11 +67,11 @@ export function StoryViewerModal({ visible, user, stories, onClose }: Props) {
   useEffect(() => {
     if (!visible || stories.length === 0) return;
     startProgress();
-    
+
     if (currentStory) {
       incrementViews({ storyId: currentStory._id }).catch(() => {});
     }
-    
+
     return () => stopProgress();
   }, [visible, currentIndex]);
 
@@ -182,6 +182,11 @@ const viewerStyles = StyleSheet.create({
     paddingTop: 48,
     gap: 4,
     zIndex: 10,
+  },
+  viewerUserInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   progressTrack: {
     flex: 1,

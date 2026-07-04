@@ -1,5 +1,10 @@
-// app/(tabs)/bookmarks.tsx
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import { Image } from "expo-image";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";

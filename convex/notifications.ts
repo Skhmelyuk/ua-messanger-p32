@@ -1,4 +1,3 @@
-// convex/notifications.ts
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
@@ -13,6 +12,7 @@ export const getNotifications = query({
       return [];
     }
 
+    // Отримуємо всі сповіщення для користувача
     const notifications = await ctx.db
       .query("notifications")
       .withIndex("by_receiver", (q) => q.eq("receiverId", userId))
@@ -21,6 +21,7 @@ export const getNotifications = query({
 
     if (notifications.length === 0) return [];
 
+    // Збагачуємо сповіщення даними відправника та поста
     const notificationsWithInfo = await Promise.all(
       notifications.map(async (notification) => {
         const sender = await ctx.db.get(notification.senderId);
@@ -59,5 +60,34 @@ export const getNotifications = query({
     return notificationsWithInfo.filter(
       (item): item is NonNullable<typeof item> => item !== null,
     );
+  },
+});
+
+/**
+ * Видаляє сповіщення з бази даних
+ */
+export const deleteNotification = mutation({
+  args: {
+    notificationId: v.id("notifications"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      throw new Error("Unauthorized: Неавторизований доступ");
+    }
+
+    const notification = await ctx.db.get(args.notificationId);
+    if (!notification) {
+      throw new Error("Сповіщення не знайдено");
+    }
+
+    // Перевірка безпеки: чи належить сповіщення поточному користувачу
+    if (notification.receiverId !== userId) {
+      throw new Error("Ви можете видаляти лише власні сповіщення");
+    }
+
+    await ctx.db.delete(args.notificationId);
+
+    return { success: true };
   },
 });

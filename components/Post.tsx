@@ -7,6 +7,7 @@ import { useMutation, useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import { Link } from "expo-router";
 import { CommentsModal } from "./CommentsModal";
 
 export type PostProps = {
@@ -103,13 +104,22 @@ export const Post = ({ post }: PostProps) => {
     <View style={styles.post}>
       {/* HEADER POST */}
       <View style={styles.postHeader}>
-        <View style={styles.postHeaderLeft}>
-          <Image
-            source={{ uri: post.author.image }}
-            style={styles.postAvatar}
-          />
-          <Text style={styles.postUsername}>{post.author.username}</Text>
-        </View>
+        <Link
+          href={
+            (currentUser?._id === post.userId
+              ? "/(tabs)/profile"
+              : `/user/${post.userId}`) as any
+          }
+          asChild
+        >
+          <TouchableOpacity style={styles.postHeaderLeft} activeOpacity={0.7}>
+            <Image
+              source={{ uri: post.author.image }}
+              style={styles.postAvatar}
+            />
+            <Text style={styles.postUsername}>{post.author.username}</Text>
+          </TouchableOpacity>
+        </Link>
 
         {/* Кнопка видалення показується лише власнику поста */}
         {isOwner && (

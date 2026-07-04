@@ -1,10 +1,11 @@
-// app/(tabs)/notifications.tsx
 import { View, Text, FlatList } from "react-native";
-import { useQuery } from "convex/react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { COLORS } from "@/constants/theme";
 import { Loader } from "@/components/Loader";
-import { NotificationItem } from "@/components/NotificationItem";
+import { SwipeableNotificationItem } from "@/components/SwipeableNotificationItem";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "@/styles/notifications.styles";
 
@@ -21,6 +22,17 @@ function NoNotificationsFound() {
 
 export default function NotificationsScreen() {
   const notifications = useQuery(api.notifications.getNotifications);
+  const deleteNotification = useMutation(api.notifications.deleteNotification);
+
+  const handleDeleteNotification = async (
+    notificationId: Id<"notifications">,
+  ) => {
+    try {
+      await deleteNotification({ notificationId });
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
+  };
 
   if (notifications === undefined) {
     return <Loader />;
@@ -31,22 +43,27 @@ export default function NotificationsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Notifications</Text>
-      </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Notifications</Text>
+        </View>
 
-      <FlatList
-        data={notifications}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 16 }}>
-            <NotificationItem notification={item} />
-          </View>
-        )}
-        keyExtractor={(item) => item._id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContainer}
-      />
-    </View>
+        {/* NOTIFICATIONS LIST */}
+        <FlatList
+          data={notifications}
+          renderItem={({ item }) => (
+            <SwipeableNotificationItem
+              notification={item}
+              onDelete={handleDeleteNotification}
+            />
+          )}
+          keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+        />
+      </View>
+    </GestureHandlerRootView>
   );
 }

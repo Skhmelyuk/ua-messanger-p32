@@ -217,13 +217,22 @@ export const deletePost = mutation({
       await ctx.db.delete(bookmark._id);
     }
 
-    // 4. Видаляємо зображення зі Storage
+    // 4. Видаляємо всі пов'язані сповіщення
+    const notifications = await ctx.db
+      .query("notifications")
+      .withIndex("by_post", (q) => q.eq("postId", args.postId))
+      .collect();
+    for (const notification of notifications) {
+      await ctx.db.delete(notification._id);
+    }
+
+    // 5. Видаляємо зображення зі Storage
     await ctx.storage.delete(post.storageId);
 
-    // 5. Видаляємо сам документ посту
+    // 6. Видаляємо сам документ посту
     await ctx.db.delete(args.postId);
 
-    // 6. Зменшуємо кількість постів користувача
+    // 7. Зменшуємо кількість постів користувача
     const currentUser = await ctx.db.get(userId);
     if (currentUser) {
       await ctx.db.patch(userId, {
@@ -280,5 +289,26 @@ export const getPostById = query({
       isLiked,
       isBookmarked,
     };
+  },
+});
+
+/**
+ * Отримує всі пости конкретного користувача
+ */
+export const getPostsByUser = query({
+  args: {
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const userId = args.userId ?? (await getAuthUserId(ctx));
+    if (!userId) return [];
+
+    const posts = await ctx.db
+      .query("posts")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
+      .collect();
+
+    return posts;
   },
 });
