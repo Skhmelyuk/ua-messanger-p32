@@ -1,4 +1,5 @@
 import { Post } from "@/components/Post";
+import { StoriesSection } from "@/components/StoriesSection";
 import { COLORS } from "@/constants/theme";
 import { api } from "@/convex/_generated/api";
 import { styles } from "@/styles/feed.styles";
@@ -42,6 +43,7 @@ export default function FeedScreen() {
         keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 60 }}
+        ListHeaderComponent={<StoriesSection />}
         ListEmptyComponent={
           <View style={[styles.centered, { marginTop: 40 }]}>
             <Text style={{ color: COLORS.grey, fontSize: 16 }}>
