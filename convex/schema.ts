@@ -75,4 +75,28 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_expires", ["expiresAt"]),
+
+  conversations: defineTable({
+    user1Id: v.id("users"),
+    user2Id: v.id("users"),
+    lastMessage: v.optional(v.string()),
+    lastMessageType: v.optional(v.union(v.literal("text"), v.literal("image"), v.literal("audio"))),
+    updatedAt: v.number(),
+  })
+    .index("by_users", ["user1Id", "user2Id"])
+    .index("by_user1", ["user1Id"])
+    .index("by_user2", ["user2Id"]),
+
+  messages: defineTable({
+    conversationId: v.id("conversations"),
+    senderId: v.id("users"),
+    content: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+    imageStorageId: v.optional(v.id("_storage")),
+    audioUrl: v.optional(v.string()),
+    audioStorageId: v.optional(v.id("_storage")),
+    audioDuration: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_conversation", ["conversationId"]),
 });
+

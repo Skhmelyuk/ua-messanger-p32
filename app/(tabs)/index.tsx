@@ -6,9 +6,12 @@ import { styles } from "@/styles/feed.styles";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
+import { useState } from "react";
+import NewChatModal from "@/components/NewChatModal";
 import {
   ActivityIndicator,
   FlatList,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -17,6 +20,7 @@ import {
 export default function FeedScreen() {
   const posts = useQuery(api.posts.getPosts);
   const { signOut } = useAuthActions();
+  const [modalVisible, setModalVisible] = useState(false);
 
   if (posts === undefined) {
     return (
@@ -52,6 +56,40 @@ export default function FeedScreen() {
           </View>
         }
       />
+
+      {/* FLOATING CHAT BUTTON */}
+      <TouchableOpacity
+        style={localStyles.chatButton}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="chatbubble-ellipses" size={26} color={COLORS.white} />
+      </TouchableOpacity>
+
+      <NewChatModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  chatButton: {
+    position: "absolute",
+    bottom: 76,
+    right: 16,
+    backgroundColor: COLORS.primary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+});
+
